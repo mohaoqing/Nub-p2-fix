@@ -48,13 +48,18 @@ class Crawler:
             logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
             url_data = self.corpus.fetch_url(url)
             self.url_data = url_data
+            parsed = urlparse(url)
+            if '.' in parsed.netloc:
+                sub = parsed.netloc.split(':')[0]
+                if 'www' in sub.split('.'):
+                    sub = '.'.join(sub.split('.')[1:])
+                self.subcnt[sub] += 1
 
             for next_link in self.extract_next_links(url_data):
                 next_link = next_link.strip('/')
                 if self.is_valid(next_link):
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
-        print(self.count)
 
         analysis_file = open(self.ANALYSIS_FILE_NAME, "w")
 
@@ -66,7 +71,6 @@ class Crawler:
             if key in self.htmlsw:
                 del self.cnt[key]
                 continue
-
 
         for key,value in self.cnt.most_common(50):
             analysis_file.write('\n\t' + key + " " + str(value))
@@ -154,8 +158,6 @@ class Crawler:
         filter out crawler traps. Duplicated urls will be taken care of by frontier. You don't need to check for duplication
         in this method
         """
-        word_count = 0
-
         parsed = urlparse(url)
 
         ##开始Invalid检测
@@ -166,7 +168,7 @@ class Crawler:
         if parsed.scheme not in {"http", "https"}:
             return False
 
-        elif "calendar." in url or "/calendar" in url:
+        elif '/calendars/' not in url and ("calendar." in url or "/calendar" in url):
             traps.append(url + '\n\t\tTraps: Calendar included- may create infinite webpages\n')
             return False
 
@@ -187,24 +189,16 @@ class Crawler:
         #判断完成，证明这个valid之后的操作:
 
         # put all the words in this page into a counter
-        # text_string = self.url_data["content"].lower()
-        # match_pattern = re.findall(r'\b[a-z]{3,15}\b', str(text_string))
-        # word_count = len(match_pattern)
-        # for i in match_pattern:
-        #     self.cnt[i] += 1
+        text_string = self.url_data["content"].lower()
+        match_pattern = re.findall(r'\b[a-z]{3,15}\b', str(text_string))
+        word_count = len(match_pattern)
+        for i in match_pattern:
+            self.cnt[i] += 1
 
         # check if this page has most words
         if word_count > longest_page[1] and url.split('.')[-1] != 'com':
             longest_page[0] = url
             longest_page[1] = word_count
-        #################
-        if '.' in parsed.netloc:
-            subdomain = parsed.netloc.split(':')[0]
-            if 'www' in subdomain.split('.'):
-                subdomain = '.'.join(subdomain.split('.')[1:])
-            if url not in self.frontier.urls_set:
-                self.subcnt[subdomain] += 1
-        self.count += 1
 
         try:
             return ".ics.uci.edu" in parsed.hostname \

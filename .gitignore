@@ -1,0 +1,8 @@
+
+analytics.txt
+frontier_state/fetched.pkl
+frontier_state/url_queue.pkl
+frontier_state/url_set.pkl
+__pycache__/crawler.cpython-38.pyc
+.idea/workspace.xml
+.idea/vcs.xml
