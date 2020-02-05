@@ -34,7 +34,7 @@ class Crawler:
         self.subcnt = Counter()
         self.url_data = ''
         self.sw = stopwords.words('english')
-        self.htmlsw = {"class", "href", "div", "dropdown", "item", "span", "php", "www", "https", "type", "http", "name", "img", "nav", "src", "script", "com", "toggle", "text", "bin", "hidden", "link", "false", "true", "input", "style", "jpg", "alt", "amp", "col", "javascript", "html", "content", "pdf", "png" ,"btn", "icon", "title", "nbsp", "rel", "css" ,"font"}
+        self.htmlsw = {"class", "href", "div", "dropdown", "item", "span", "php", "www", "https", "type", "http", "name", "img", "nav", "src", "script", "com", "toggle", "text", "bin", "hidden", "link", "false", "true", "input", "style", "jpg", "alt", "amp", "col", "javascript", "html", "content", "pdf", "png" ,"btn", "icon", "title", "nbsp", "rel", "css" ,"font", "ngs", "raw", "rawlink", "org", "edu", "ppt", }
         self.count = 0
 
     def start_crawling(self):
@@ -184,6 +184,10 @@ class Crawler:
             traps.append(url + "\n\t\tTraps: Too many queries-may be dynamic page\n")
             return False
 
+        elif '#' in url:
+            traps.append(url + "\n\t\tTraps: random generated webpage with #\n")
+            return False
+
 
         #################d
         #判断完成，证明这个valid之后的操作:
@@ -196,7 +200,7 @@ class Crawler:
             self.cnt[i] += 1
 
         # check if this page has most words
-        if word_count > longest_page[1] and url.split('.')[-1] != 'com':
+        if word_count > longest_page[1] and url.split('.')[-1] != 'com' and 'facebook' not in url:
             longest_page[0] = url
             longest_page[1] = word_count
 
