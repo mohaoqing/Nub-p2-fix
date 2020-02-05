@@ -72,15 +72,19 @@ class Crawler:
                 del self.cnt[key]
                 continue
 
+        print('\n\n\n\n\n\n\n\n')
         for key,value in self.cnt.most_common(50):
             analysis_file.write('\n\t' + key + " " + str(value))
 
+        print('\n\n\n\n\n\n\n\n')
         analysis_file.write("\nMOSTOUTLINK PAGES")
         analysis_file.write("\n" + mostoutlink_page[0] + " " + str(mostoutlink_page[1]))
 
+        print('\n\n\n\n\n\n\n\n')
         analysis_file.write("\nLONGEST PAGES")
         analysis_file.write("\n" + longest_page[0] + " " + str(longest_page[1]))
 
+        print('\n\n\n\n\n\n\n\n')
         analysis_file.write("\nDOWNLOADED URLS")
         for i in sorted(list(self.frontier.urls_set),reverse=True):
             try:
@@ -88,10 +92,12 @@ class Crawler:
             except UnicodeEncodeError:
                 pass
 
+        print('\n\n\n\n\n\n\n\n')
         analysis_file.write("\n\nSUBDOMAINS")
         for key,value in self.subcnt.most_common():
             analysis_file.write('\n\t' + str(key) + " " + str(value))
 
+        print('\n\n\n\n\n\n\n\n')
         analysis_file.write("\n\nTRAPS")
         for i in sorted(traps,reverse=True):
             try:
@@ -182,10 +188,6 @@ class Crawler:
 
         elif len(parsed.query.split("&")) > 2 and '..' not in url and '.pdf' not in url:
             traps.append(url + "\n\t\tTraps: Too many queries-may be dynamic page\n")
-            return False
-
-        elif '#' in url:
-            traps.append(url + "\n\t\tTraps: random generated webpage with #\n")
             return False
 
 
